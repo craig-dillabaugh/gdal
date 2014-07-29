@@ -1,0 +1,13 @@
+{
+	"name": "gdald",
+	"description": "D bindings for the Geospatial Data Abstraction Library (GDAL).",
+	"homepage": "https://github.com/craig-dillabaugh/TBD",
+	"homepage": "http://www.gdal.org/",
+	"importPaths":["."],
+	"targetType": "sourceLibrary",
+	"license": "MIT",
+	"authors": [
+		"Craig Dillabaugh"
+	],
+	"libs" : ["libgdal"]
+}
