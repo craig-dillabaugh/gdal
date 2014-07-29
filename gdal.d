@@ -137,28 +137,29 @@ enum string GDAL_DCAP_VIRTUALIO		= "DCAP_VIRTUALIO"
 
 void GDALAllRegister( void );
 
-//TODO: What the heck is CPL_WARN_UNUSED_RESULT ?????
 extern(C) GDALDatasetH 
 GDALCreate(   GDALDriverH hDriver,
 	      const(char)*, int, int, int, GDALDataType,
-	      char** ) CPL_WARN_UNUSED_RESULT;
+	      char** );
 
 //TODO: What to do with CPL_WARN_UNUSED RESULT ????
+//gdal-1.11.0/port/cpl_port.h (l 571-575) This is a Macro that append
+// __attribute__((warn_unused_result))  for GCC compilers > version 4
+//and where DOxygen is not turned off.  I think it is likely safe to
+//ignore.
 extern(C) GDALDatasetH
 GDALCreateCopy( GDALDriverH, const(char)*, GDALDatasetH,
-                int, char**, GDALProgressFunc, void* ) CPL_WARN_UNUSED_RESULT;
+                int, char**, GDALProgressFunc, void* );
 
 extern(C) GDALDriverH 
 GDALIdentifyDriver( const(char)* pszFilename,
                     char** papszFileList );
 
-//TODO: What to do with CPL_WARN_UNUSED_RESULT ??????
 extern(C) GDALDatasetH
-GDALOpen( const(char)*pszFilename, GDALAccess eAccess ) CPL_WARN_UNUSED_RESULT;
+GDALOpen( const(char)*pszFilename, GDALAccess eAccess );
 
-//TODO: CPL_WARN_UNUSED_RESULT ......
 extern(C) GDALDatasetH
-GDALOpenShared( const(char)*, GDALAccess ) CPL_WARN_UNUSED_RESULT;
+GDALOpenShared( const(char)*, GDALAccess );
 
 
 extern(C) int GDALDumpOpenDatasets( FILE * );
@@ -207,15 +208,13 @@ extern(C) void GDALInitGCPs( int, GDAL_GCP* );
 extern(C) void GDALDeinitGCPs( int, GDAL_GCP* );
 extern(C) GDAL_GCP* GDALDuplicateGCPs( int, const(GDAL_GCP)* );
 
-//TODO: Fix CPL_WARN ....
 extern(C) int
 GDALGCPsToGeoTransform( int nGCPCount, const(GDAL_GCP)* pasGCPs, 
-                        double *padfGeoTransform, int bApproxOK )  CPL_WARN_UNUSED_RESULT; 
+                        double *padfGeoTransform, int bApproxOK ); 
 
-//TODO: Fix CPLWUR                        
 extern(C) int 
 GDALInvGeoTransform( double* padfGeoTransformIn, 
-		     double* padfInvGeoTransformOut ) CPL_WARN_UNUSED_RESULT;
+		     double* padfInvGeoTransformOut );
                      
 
 extern(C) void GDALApplyGeoTransform( double*, double, double, 
@@ -795,5 +794,3 @@ GDALRasterBandGetTiledVirtualMem( GDALRasterBandH hBand,
                                   size_t nCacheSize,
                                   int bSingleThreadUsage,
                                   char** papszOptions );
-
-//TODO: What is this???????   CPL_C_END
