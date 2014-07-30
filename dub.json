@@ -4,7 +4,7 @@
 	"homepage": "https://github.com/craig-dillabaugh/TBD",
 	"homepage": "http://www.gdal.org/",
 	"importPaths":["."],
-	"targetType": "sourceLibrary",
+	"targetType": "executable",
 	"license": "MIT",
 	"authors": [
 		"Craig Dillabaugh"

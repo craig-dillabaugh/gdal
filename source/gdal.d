@@ -11,8 +11,34 @@
  
  import std.c.stdio;
  
+ /*
+  * The enum CPLErr is defined in the header file cpl_error.h. I have not
+  * for the time being included a binding to that header, but have just 
+  * imported this single symbol from it.
+  *
+  * Similarly, GDALProgressFunc is defined in port/cpl_progress.h
+  */
+enum CPLErr
+{
+    CE_None = 0,
+    CE_Debug = 1,
+    CE_Warning = 2,
+    CE_Failure = 3,
+    CE_Fatal = 4
+}
+
+extern(C) alias 
+GDALProgressFunc = int function( double dfComplete, const(char)* pszMessage, 
+				 void* pProgressArg );
+				 
+alias GIntBig = long; //GIntBig is a 64-bit integer and long is always 
+		      //64 bits in D.
+alias GByte = ubyte;  //GByte is unsigned char in C.
+
+/* ******************* END of CPL Symbols ********************** /
+ 
  /*! Pixel data types */
-typedef GDALDataType {
+enum GDALDataType {
     GDT_Unknown = 0,
     GDT_Byte = 1,
     GDT_UInt16 = 2,
@@ -124,18 +150,18 @@ struct GDALOptionDefinition {
     char**	papszOptions;
 }
 
-enum string GDAL_DMD_LONGNAME 		= "DMD_LONGNAME"
-enum string GDAL_DMD_HELPTOPIC 		= "DMD_HELPTOPIC"
-enum string GDAL_DMD_MIMETYPE 		= "DMD_MIMETYPE"
-enum string GDAL_DMD_EXTENSION 		= "DMD_EXTENSION"
-enum string GDAL_DMD_CREATIONOPTIONLIST = "DMD_CREATIONOPTIONLIST" 
-enum string GDAL_DMD_CREATIONDATATYPES 	= "DMD_CREATIONDATATYPES" 
-enum string GDAL_DMD_SUBDATASETS 	= "DMD_SUBDATASETS" 
-enum string GDAL_DCAP_CREATE 		= "DCAP_CREATE"
-enum string GDAL_DCAP_CREATECOPY	= "DCAP_CREATECOPY"
-enum string GDAL_DCAP_VIRTUALIO		= "DCAP_VIRTUALIO"
+enum string GDAL_DMD_LONGNAME 		= "DMD_LONGNAME";
+enum string GDAL_DMD_HELPTOPIC 		= "DMD_HELPTOPIC";
+enum string GDAL_DMD_MIMETYPE 		= "DMD_MIMETYPE";
+enum string GDAL_DMD_EXTENSION 		= "DMD_EXTENSION";
+enum string GDAL_DMD_CREATIONOPTIONLIST = "DMD_CREATIONOPTIONLIST"; 
+enum string GDAL_DMD_CREATIONDATATYPES 	= "DMD_CREATIONDATATYPES";
+enum string GDAL_DMD_SUBDATASETS 	= "DMD_SUBDATASETS"; 
+enum string GDAL_DCAP_CREATE 		= "DCAP_CREATE";
+enum string GDAL_DCAP_CREATECOPY	= "DCAP_CREATECOPY";
+enum string GDAL_DCAP_VIRTUALIO		= "DCAP_VIRTUALIO";
 
-void GDALAllRegister( void );
+void GDALAllRegister();
 
 extern(C) GDALDatasetH 
 GDALCreate(   GDALDriverH hDriver,
@@ -165,12 +191,12 @@ GDALOpenShared( const(char)*, GDALAccess );
 extern(C) int GDALDumpOpenDatasets( FILE * );
 
 extern(C) GDALDriverH GDALGetDriverByName( const(char) * );
-extern(C) int  GDALGetDriverCount( void );
+extern(C) int  GDALGetDriverCount( );
 extern(C) GDALDriverH GDALGetDriver( int );
 extern(C) void GDALDestroyDriver( GDALDriverH );
 extern(C) int  GDALRegisterDriver( GDALDriverH );
 extern(C) void GDALDeregisterDriver( GDALDriverH );
-extern(C) void GDALDestroyDriverManager( void );
+extern(C) void GDALDestroyDriverManager();
 extern(C) CPLErr GDALDeleteDataset( GDALDriverH, const(char)* );
 extern(C) CPLErr GDALRenameDataset( GDALDriverH, 
                                     const(char)* pszNewName,
@@ -637,7 +663,7 @@ enum GDALRATFieldUsage {
     GFU_MaxCount
 }
 
-extern(C) GDALRasterAttributeTableH GDALCreateRasterAttributeTable(void);
+extern(C) GDALRasterAttributeTableH GDALCreateRasterAttributeTable();
 extern(C) void GDALDestroyRasterAttributeTable( GDALRasterAttributeTableH );
 extern(C) int  GDALRATGetColumnCount( GDALRasterAttributeTableH );
 
@@ -717,80 +743,83 @@ extern(C) int GDALRATGetRowOfValue( GDALRasterAttributeTableH , double );
 /* ==================================================================== */
 
 extern(C) void    GDALSetCacheMax( int nBytes );
-extern(C) int     GDALGetCacheMax(void);
-extern(C) int     GDALGetCacheUsed(void);
+extern(C) int     GDALGetCacheMax();
+extern(C) int     GDALGetCacheUsed();
 extern(C) void    GDALSetCacheMax64( GIntBig nBytes );
-extern(C) GIntBig GDALGetCacheMax64(void);
-extern(C) GIntBig GDALGetCacheUsed64(void);
+extern(C) GIntBig GDALGetCacheMax64();
+extern(C) GIntBig GDALGetCacheUsed64();
 
-extern(C) int     GDALFlushCacheBlock(void);
+extern(C) int     GDALFlushCacheBlock();
 
 /* ==================================================================== */
 /*      GDAL virtual memory                                             */
 /* ==================================================================== */
 
-extern(C) CPLVirtualMem* 
-GDALDatasetGetVirtualMem( GDALDatasetH hDS, GDALRWFlag eRWFlag,
-                          int nXOff, int nYOff, int nXSize, int nYSize,
-                          int nBufXSize, int nBufYSize,
-                          GDALDataType eBufType,
-                          int nBandCount, int* panBandMap,
-                          int nPixelSpace,
-                          GIntBig nLineSpace,
-                          GIntBig nBandSpace,
-                          size_t nCacheSize,
-                          size_t nPageSizeHint,
-                          int bSingleThreadUsage,
-                          char **papszOptions );
+//TODO: Need to figure out what to do with CPLVirtualMem so for now
+//      I am just commenting out this whole section.
 
-extern(C) CPLVirtualMem* 
-GDALRasterBandGetVirtualMem( GDALRasterBandH hBand,
-                             GDALRWFlag eRWFlag,
-                             int nXOff, int nYOff,
-                             int nXSize, int nYSize,
-                             int nBufXSize, int nBufYSize,
-                             GDALDataType eBufType,
-                             int nPixelSpace,
-                             GIntBig nLineSpace,
-                             size_t nCacheSize,
-                             size_t nPageSizeHint,
-                             int bSingleThreadUsage,
-                             char **papszOptions );
-
-extern(C) CPLVirtualMem* 
-GDALGetVirtualMemAuto( GDALRasterBandH hBand,
-                       GDALRWFlag eRWFlag,
-                       int* pnPixelSpace,
-                       GIntBig *pnLineSpace,
-                       char** papszOptions );
-
-enum GDALTileOrganization
-{
-    GTO_TIP,
-    GTO_BIT,
-    GTO_BSQ
-} 
-
-extern(C) CPLVirtualMem* 
-GDALDatasetGetTiledVirtualMem( GDALDatasetH hDS,
-                               GDALRWFlag eRWFlag,
-                               int nXOff, int nYOff,
-                               int nXSize, int nYSize,
-                               int nTileXSize, int nTileYSize,
-                               GDALDataType eBufType,
-                               int nBandCount, int* panBandMap,
-                               GDALTileOrganization eTileOrganization,
-                               size_t nCacheSize,
-                               int bSingleThreadUsage,
-                               char **papszOptions );
-                               
-extern(C) CPLVirtualMem* 
-GDALRasterBandGetTiledVirtualMem( GDALRasterBandH hBand,
-                                  GDALRWFlag eRWFlag,
-                                  int nXOff, int nYOff,
-                                  int nXSize, int nYSize,
-                                  int nTileXSize, int nTileYSize,
-                                  GDALDataType eBufType,
-                                  size_t nCacheSize,
-                                  int bSingleThreadUsage,
-                                  char** papszOptions );
+// extern(C) CPLVirtualMem* 
+// GDALDatasetGetVirtualMem( GDALDatasetH hDS, GDALRWFlag eRWFlag,
+//                           int nXOff, int nYOff, int nXSize, int nYSize,
+//                           int nBufXSize, int nBufYSize,
+//                           GDALDataType eBufType,
+//                           int nBandCount, int* panBandMap,
+//                           int nPixelSpace,
+//                           GIntBig nLineSpace,
+//                           GIntBig nBandSpace,
+//                           size_t nCacheSize,
+//                           size_t nPageSizeHint,
+//                           int bSingleThreadUsage,
+//                           char **papszOptions );
+// 
+// extern(C) CPLVirtualMem* 
+// GDALRasterBandGetVirtualMem( GDALRasterBandH hBand,
+//                              GDALRWFlag eRWFlag,
+//                              int nXOff, int nYOff,
+//                              int nXSize, int nYSize,
+//                              int nBufXSize, int nBufYSize,
+//                              GDALDataType eBufType,
+//                              int nPixelSpace,
+//                              GIntBig nLineSpace,
+//                              size_t nCacheSize,
+//                              size_t nPageSizeHint,
+//                              int bSingleThreadUsage,
+//                              char **papszOptions );
+// 
+// extern(C) CPLVirtualMem* 
+// GDALGetVirtualMemAuto( GDALRasterBandH hBand,
+//                        GDALRWFlag eRWFlag,
+//                        int* pnPixelSpace,
+//                        GIntBig *pnLineSpace,
+//                        char** papszOptions );
+// 
+// enum GDALTileOrganization
+// {
+//     GTO_TIP,
+//     GTO_BIT,
+//     GTO_BSQ
+// } 
+// 
+// extern(C) CPLVirtualMem* 
+// GDALDatasetGetTiledVirtualMem( GDALDatasetH hDS,
+//                                GDALRWFlag eRWFlag,
+//                                int nXOff, int nYOff,
+//                                int nXSize, int nYSize,
+//                                int nTileXSize, int nTileYSize,
+//                                GDALDataType eBufType,
+//                                int nBandCount, int* panBandMap,
+//                                GDALTileOrganization eTileOrganization,
+//                                size_t nCacheSize,
+//                                int bSingleThreadUsage,
+//                                char **papszOptions );
+//                                
+// extern(C) CPLVirtualMem* 
+// GDALRasterBandGetTiledVirtualMem( GDALRasterBandH hBand,
+//                                   GDALRWFlag eRWFlag,
+//                                   int nXOff, int nYOff,
+//                                   int nXSize, int nYSize,
+//                                   int nTileXSize, int nTileYSize,
+//                                   GDALDataType eBufType,
+//                                   size_t nCacheSize,
+//                                   int bSingleThreadUsage,
+//                                   char** papszOptions );
