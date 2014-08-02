@@ -6,6 +6,9 @@
  *
  * For more information on GDAL itself see:  http://www.gdal.org/
  *
+ *
+ * Current build command:
+ *     dmd test_gdal_d.d gdal.d -L-lgdal
  */
  module gdal;
  
@@ -129,7 +132,7 @@ enum string GDALMD_AOP_POINT     = "Point";
 
 enum int CPLE_WrongFormat  = 200;
 
-alias int* SAFile;
+alias int*  SAFile;
 alias void* GDALMajorObjectH;
 alias void* GDALDatasetH;
 alias void* GDALRasterBandH;
@@ -161,7 +164,7 @@ enum string GDAL_DCAP_CREATE 		= "DCAP_CREATE";
 enum string GDAL_DCAP_CREATECOPY	= "DCAP_CREATECOPY";
 enum string GDAL_DCAP_VIRTUALIO		= "DCAP_VIRTUALIO";
 
-void GDALAllRegister();
+extern(C) void GDALAllRegister();
 
 extern(C) GDALDatasetH 
 GDALCreate(   GDALDriverH hDriver,
