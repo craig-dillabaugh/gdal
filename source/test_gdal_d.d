@@ -1,12 +1,19 @@
 import gdal;
 
 /*
+ * Test functions for GDAL Geospatial Data Abstraction Library. 
+ *
+ * Currently compiles with: dmd test_gdal_d.d gdal.d -L-ldgal
+ * 
+ */
+
+/*
  * This function tests creating files. It creates three TIFF datasets with
  * different data types.
  */
 bool testGDALCreate()
 {
-  import std.string;
+  import std.file, std.string;
   
   GDALAllRegister();
 
@@ -23,6 +30,9 @@ bool testGDALCreate()
   GDALCreate( driver_handle, toStringz( file ~ "cint32.tif" ), x_size, y_size, n_bands, 
 	      GDALDataType.GDT_CInt32, null);
 
+  remove( file ~ "byte.tif");
+  remove( file ~ "float.tif");
+  remove( file ~ "cint32.tif");
   return true;
 }
 
@@ -40,6 +50,18 @@ void testOpen()
   int y_size = GDALGetRasterYSize( ds );
   
   writeln(testfile, " has ", num_bands, " bands and is [", x_size, "x", y_size, "]");
+  
+  /* Band index's start at 1. */
+  GDALRasterBandH band = GDALGetRasterBand( ds, 1 );
+  
+  /* Getting Block Size */
+  int x_dim, y_dim;
+  GDALGetBlockSize( band, &x_dim, &y_dim );
+  
+  write("Band 1 is of size ", GDALGetRasterBandXSize( band ), " by ");
+  writeln( GDALGetRasterBandYSize( band ), ".");
+  writeln("\twith block size = ", x_dim, ", ", y_dim, ".");
+  
   GDALClose( ds );
 }
 
