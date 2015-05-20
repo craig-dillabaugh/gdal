@@ -2,9 +2,12 @@ gdal_d.d
 
 D bindings to the GDAL C Library.
 
-These bindings are based on version 1.11.0
-of the GDAL library, and are Alpha-quality, in terms
-of having not really been 'tested'.  However, with 
-any luck they should work.
+These bindings are for GDAL version 2.  They are 
+currently under development. The 1_11 branch has
+bindings for GDAL 1.11.0 and are (as far as I know)
+complete.
+
+
+
 
 
