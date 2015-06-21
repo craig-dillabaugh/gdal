@@ -87,6 +87,42 @@ enum GDALRWFlag{
     GF_Write = 1
 }
 
+emum GDALRIOResampleAlg {
+    GRIORA_NearestNeighbour = 0,                  
+    GRIORA_Bilinear = 1,                        
+    GRIORA_Cubic = 2, 
+    GRIORA_CubicSpline = 3,
+    GRIORA_Lanczos = 4,
+    GRIORA_Average = 5,                                
+    GRIORA_Mode = 6,
+    GRIORA_Gauss = 7                              
+}
+
+enum RASTERIO_EXTRA_ARG_CURRENT_VERSION = 1;
+
+struct GDALRasterIOExtraArg
+{
+    int                 nVersion;
+    GDALRIOResampleAlg  eResampleAlg;
+    GDALProgressFunc    pfnProgress;
+    void*		pProgressData;
+    int                 bFloatingPointWindowValidity;
+    double              dfXOff;
+    double              dfYOff;
+    double              dfXSize;
+    double              dfYSize;
+}
+
+//This replaces the INIT_RASTERIO_EXTRA_ARGs Macro.
+void INIT_RASTERIO_EXTRA_ARG( ref GDALRasterIOExtraArg s )
+{
+  s.nVersion = RASTERIO_EXTRA_ARG_CURRENT_VERSION;
+  s.eResampleAlg = GRIORA_NearestNeighbour;
+  s.pfnProgress = null;
+  s.pProgressData = null;
+  s.bFloatingPointWindowValidity = 0;
+}
+
 /*! Types of color interpretation for raster bands. */
 enum GDALColorInterp
 {
@@ -138,31 +174,31 @@ alias void* GDALDatasetH;
 alias void* GDALRasterBandH;
 alias void* GDALDriverH;
 
-/* 
- * I did not add an alias for GDALProjDefH, as it is deprecated.
- */
+
 
 alias void* GDALColorTableH;
 alias void* GDALRasterAttributeTableH;
 alias void* GDALAsyncReaderH;
 
-struct GDALOptionDefinition {
-    char*	pszOptionName;
-    char*	pszValueType;
-    char*	pszDescription;
-    char**	papszOptions;
-}
+alias GSpacing = GIntBig;
 
 enum string GDAL_DMD_LONGNAME 		= "DMD_LONGNAME";
 enum string GDAL_DMD_HELPTOPIC 		= "DMD_HELPTOPIC";
 enum string GDAL_DMD_MIMETYPE 		= "DMD_MIMETYPE";
 enum string GDAL_DMD_EXTENSION 		= "DMD_EXTENSION";
+enum string GDAL_DMD_CONNECTION_PREFIX  = "DMD_CONNECTION_PREFIX";
 enum string GDAL_DMD_CREATIONOPTIONLIST = "DMD_CREATIONOPTIONLIST"; 
 enum string GDAL_DMD_CREATIONDATATYPES 	= "DMD_CREATIONDATATYPES";
 enum string GDAL_DMD_SUBDATASETS 	= "DMD_SUBDATASETS"; 
+enum string GDAL_DCAP_OPEN       	= "DCAP_OPEN";
 enum string GDAL_DCAP_CREATE 		= "DCAP_CREATE";
 enum string GDAL_DCAP_CREATECOPY	= "DCAP_CREATECOPY";
 enum string GDAL_DCAP_VIRTUALIO		= "DCAP_VIRTUALIO";
+enum string GDAL_DCAP_RASTER     	= "DCAP_RASTER";
+enum string GDAL_DCAP_VECTOR            = "DCAP_VECTOR";
+enum string GDAL_DCAP_NOTNULL_FIELDS 	= "DCAP_NOTNULL_FIELDS";
+enum string GDAL_DCAP_DEFAULT_FIELDS 	= "DCAP_DEFAULT_FIELDS";
+enum string GDAL_DCAP_NOTNULL_GEOMFIELDS = "DCAP_NOTNULL_GEOMFIELDS"; 
 
 extern(C) void GDALAllRegister();
 
@@ -190,6 +226,23 @@ GDALOpen( const(char)*pszFilename, GDALAccess eAccess );
 extern(C) GDALDatasetH
 GDALOpenShared( const(char)*, GDALAccess );
 
+enum int GDAL_OF_READONLY      = 0x00; 
+enum int GDAL_OF_UPDATE        = 0x01; 
+enum int GDAL_OF_ALL  	       = 0x00; 
+enum int GDAL_OF_RASTER        = 0x02;
+enum int GDAL_OF_VECTOR        = 0x04;
+enum int GDAL_OF_KIND_MASK     = 0x1E;
+enum int GDAL_OF_SHARED        = 0x20;
+enum int GDAL_OF_VERBOSE_ERROR = 0x40;
+enum int GDAL_OF_INTERNAL      = 0x80;
+
+extern(C) GDALDataset GDALOpenEx( const(char)* pszFilename,
+				  unsigned int nOpenFlags,
+				  const(char*) const(*) papszAllowedDrivers,
+				  const(char*) const(*) papszOpenOptions,
+				  const(char*) const(*) papszSiblingFiles );
+
+
 
 extern(C) int GDALDumpOpenDatasets( FILE * );
 
@@ -200,6 +253,7 @@ extern(C) void GDALDestroyDriver( GDALDriverH );
 extern(C) int  GDALRegisterDriver( GDALDriverH );
 extern(C) void GDALDeregisterDriver( GDALDriverH );
 extern(C) void GDALDestroyDriverManager();
+extern(C) void GDALDestory();
 extern(C) CPLErr GDALDeleteDataset( GDALDriverH, const(char)* );
 extern(C) CPLErr GDALRenameDataset( GDALDriverH, 
                                     const(char)* pszNewName,
@@ -270,7 +324,7 @@ extern(C) const(char)* GDALGetDescription( GDALMajorObjectH );
 extern(C) void GDALSetDescription( GDALMajorObjectH, const(char)* );
 
 
-
+enum string GDAL_DS_LAYER_CREATIONOPTIONLIST = "DS_LAYER_CREATIONOPTIONLIST";
 
 /*  GDALDataset class ... normally this represents one file. */
 
@@ -302,6 +356,15 @@ extern(C) CPLErr   GDALDatasetRasterIO(
     void* pBuffer, int nBXSize, int nBYSize, GDALDataType eBDataType,
     int nBandCount, int* panBandCount, 
     int nPixelSpace, int nLineSpace, int nBandSpace);
+    
+    
+extern(C) CPLErr GDALDatasetRasterIOEx( 
+    GDALDatasetH hDS, GDALRWFlag eRWFlag,
+    int nDSXOff, int nDSYOff, int nDSXSize, int nDSYSize,
+    void* pBuffer, int nBXSize, int nBYSize, GDALDataType eBDataType,
+    int nBandCount, int *panBandCount, 
+    GSpacing nPixelSpace, GSpacing nLineSpace, GSpacing nBandSpace,
+    GDALRasterIOExtraArg* psExtraArg);
 
 extern(C) CPLErr   GDALDatasetAdviseRead( GDALDatasetH hDS, 
     int nDSXOff, int nDSYOff, int nDSXSize, int nDSYSize,
@@ -351,6 +414,26 @@ GDALRegenerateOverviews( GDALRasterBandH hSrcBand,
                          GDALProgressFunc pfnProgress, void *pProgressData );
 
 
+extern(C) int        GDALDatasetGetLayerCount( GDALDatasetH );
+extern(C) OGRLayerH  GDALDatasetGetLayer( GDALDatasetH, int );
+extern(C) OGRLayerH  GDALDatasetGetLayerByName( GDALDatasetH, const(char)* );
+extern(C) OGRErr     GDALDatasetDeleteLayer( GDALDatasetH, int );
+extern(C) OGRLayerH  GDALDatasetCreateLayer( GDALDatasetH, const(char)*, 
+                                      OGRSpatialReferenceH, OGRwkbGeometryType,
+                                      char ** );
+extern(C) OGRLayerH  GDALDatasetCopyLayer( GDALDatasetH, OGRLayerH, const(char)*,
+                                        char ** );
+extern(C) int        GDALDatasetTestCapability( GDALDatasetH, const(char)* );
+extern(C) OGRLayerH  GDALDatasetExecuteSQL( GDALDatasetH, const(char)*,
+                                     OGRGeometryH, const(char)* );
+extern(C) void   GDALDatasetReleaseResultSet( GDALDatasetH, OGRLayerH );
+extern(C) OGRStyleTableH  GDALDatasetGetStyleTable( GDALDatasetH );
+extern(C) void   GDALDatasetSetStyleTableDirectly( GDALDatasetH, OGRStyleTableH );
+extern(C) void   GDALDatasetSetStyleTable( GDALDatasetH, OGRStyleTableH );
+extern(C) OGRErr GDALDatasetStartTransaction(GDALDatasetH hDS, int bForce);
+extern(C) OGRErr GDALDatasetCommitTransaction(GDALDatasetH hDS);
+extern(C) OGRErr GDALDatasetRollbackTransaction(GDALDatasetH hDS);                         
+                         
 /*      GDALRasterBand ... one band/channel in a dataset.               */
 
 /*
