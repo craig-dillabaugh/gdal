@@ -472,6 +472,13 @@ GDALRasterIO( GDALRasterBandH hRBand, GDALRWFlag eRWFlag,
               void* pBuffer, int nBXSize, int nBYSize,GDALDataType eBDataType,
               int nPixelSpace, int nLineSpace );
               
+extern(C) CPLErr 
+GDALRasterIOEx( GDALRasterBandH hRBand, GDALRWFlag eRWFlag,
+              int nDSXOff, int nDSYOff, int nDSXSize, int nDSYSize,
+              void * pBuffer, int nBXSize, int nBYSize,GDALDataType eBDataType,
+              GSpacing nPixelSpace, GSpacing nLineSpace,
+              GDALRasterIOExtraArg* psExtraArg );
+              
 extern(C) CPLErr GDALReadBlock( GDALRasterBandH, int, int, void* );
 extern(C) CPLErr GDALWriteBlock( GDALRasterBandH, int, int, void* );
 extern(C) int GDALGetRasterBandXSize( GDALRasterBandH );
@@ -526,28 +533,63 @@ extern(C) void
 GDALComputeRasterMinMax( GDALRasterBandH hBand, int bApproxOK,
                          double adfMinMax[2] );
 extern(C) CPLErr GDALFlushRasterCache( GDALRasterBandH hBand );
-extern(C) CPLErr GDALGetRasterHistogram( GDALRasterBandH hBand,
-                                       double dfMin, double dfMax,
-                                       int nBuckets, int* panHistogram,
-                                       int bIncludeOutOfRange, int bApproxOK,
-                                       GDALProgressFunc pfnProgress,
-                                       void* pProgressData );
 
-extern(C) CPLErr
-GDALGetDefaultHistogram( GDALRasterBandH hBand,
-                         double* pdfMin, double* pdfMax,
-                         int* pnBuckets, int** ppanHistogram,
-                         int bForce, GDALProgressFunc pfnProgress,
-                         void *pProgressData );
-                         
-extern(C) CPLErr GDALSetDefaultHistogram( GDALRasterBandH hBand,
-                                          double dfMin, double dfMax,
-                                          int nBuckets, int* panHistogram );
+deprecated( "Use GDALGetRasterHistogramEx() instead") {
+  extern(C) CPLErr 
+  GDALGetRasterHistogram( GDALRasterBandH hBand,
+                          double dfMin, double dfMax,
+                          int nBuckets, int* panHistogram,
+                          int bIncludeOutOfRange, int bApproxOK,
+                          GDALProgressFunc pfnProgress,
+                          void* pProgressData );
+}
+
+deprecated( "Use GDALGetDefaultHistogramEx() instead") {
+  extern(C) CPLErr
+  GDALGetDefaultHistogram( GDALRasterBandH hBand,
+			   double* pdfMin, double* pdfMax,
+			   int* pnBuckets, int** ppanHistogram,
+                           int bForce, GDALProgressFunc pfnProgress,
+                           void *pProgressData );
+}
+
+extern(C) CPLErr 
+GDALGetRasterHistogramEx( GDALRasterBandH hBand,
+                          double dfMin, double dfMax,
+                          int nBuckets, GUIntBig *panHistogram,
+                          int bIncludeOutOfRange, int bApproxOK,
+                          GDALProgressFunc pfnProgress,
+                          void * pProgressData );
+                                        
+extern(C) CPLErr 
+GDALGetDefaultHistogramEx( GDALRasterBandH hBand,
+                           double *pdfMin, double *pdfMax,
+                           int *pnBuckets, GUIntBig **ppanHistogram,
+                           int bForce,
+                           GDALProgressFunc pfnProgress,
+                           void * pProgressData );
+
+deprecated( "Use GDALSetDefaultHistogramEx() instead") {
+  extern(C) CPLErr 
+  GDALSetDefaultHistogram( GDALRasterBandH hBand,
+                           double dfMin, double dfMax,
+                           int nBuckets, int* panHistogram );
+}
+
+extern(C) CPLErr 
+GDALSetDefaultHistogramEx( GDALRasterBandH hBand,
+                           double dfMin, double dfMax,
+                           int nBuckets, GUIntBig *panHistogram );
+
+
 extern(C) int  
 GDALGetRandomRasterSample( GDALRasterBandH, int, float* );
 
 extern(C) GDALRasterBandH
 GDALGetRasterSampleOverview( GDALRasterBandH, int );
+
+extern(C) GDALRasterBandH
+GDALGetRasterSampleOverviewEx( GDALRasterBandH, GUIntBig );
 
 extern(C) CPLErr 
 GDALFillRaster( GDALRasterBandH hBand,
@@ -631,16 +673,9 @@ extern(C) int GDALLoadOziMapFile( const(char)*, double*, char**,
                                   int*, GDAL_GCP** );
 extern(C) int GDALReadOziMapFile( const(char)*, double*,
                                   char**, int*, GDAL_GCP** );
-extern(C) char** GDALLoadRPBFile( const(char)*pszFilename, 
-                                  char** papszSiblingFiles );
-extern(C) char** GDALLoadRPCFile( const(char)*pszFilename, 
-                                  char** papszSiblingFiles );
-extern(C) CPLErr GDALWriteRPBFile( const(char)*pszFilename, 
-                                   char** papszMD );
-extern(C) char** GDALLoadIMDFile( const(char)*pszFilename, 
-                                  char** papszSiblingFiles );
-extern(C) CPLErr GDALWriteIMDFile( const(char)*pszFilename, 
-                                   char **papszMD );
+
+                                  
+                                  
 
 extern(C) const(char)* GDALDecToDMS( double, const(char)*, int );
 extern(C) double GDALPackedDMSToDec( double );
@@ -912,3 +947,7 @@ GDALRasterBandGetTiledVirtualMem( GDALRasterBandH hBand,
                                   size_t nCacheSize,
                                   int bSingleThreadUsage,
                                   char** papszOptions );
+                                  
+extern(C) CPLXMLNode* 
+GDALGetJPEG2000Structure(const char* pszFilename,
+                         char** papszOptions);
