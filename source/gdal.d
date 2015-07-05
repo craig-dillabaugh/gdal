@@ -87,7 +87,7 @@ enum GDALRWFlag{
     GF_Write = 1
 }
 
-emum GDALRIOResampleAlg {
+enum GDALRIOResampleAlg {
     GRIORA_NearestNeighbour = 0,                  
     GRIORA_Bilinear = 1,                        
     GRIORA_Cubic = 2, 
@@ -237,12 +237,10 @@ enum int GDAL_OF_VERBOSE_ERROR = 0x40;
 enum int GDAL_OF_INTERNAL      = 0x80;
 
 extern(C) GDALDataset GDALOpenEx( const(char)* pszFilename,
-				  unsigned int nOpenFlags,
-				  const(char*) const(*) papszAllowedDrivers,
-				  const(char*) const(*) papszOpenOptions,
-				  const(char*) const(*) papszSiblingFiles );
-
-
+				  uint nOpenFlags,
+				  const(char*)  papszAllowedDrivers,
+				  const(char*)  papszOpenOptions,
+				  const(char*)  papszSiblingFiles );
 
 extern(C) int GDALDumpOpenDatasets( FILE * );
 
