@@ -1,4 +1,4 @@
-gdal_d.d
+gdal.d
 
 D bindings to the GDAL C Library.
 
