@@ -529,7 +529,7 @@ extern(C) CPLErr GDALSetRasterScale( GDALRasterBandH hBand, double dfNewOffset )
 
 extern(C) void   
 GDALComputeRasterMinMax( GDALRasterBandH hBand, int bApproxOK,
-                         double adfMinMax[2] );
+                         double[2] adfMinMax );
 extern(C) CPLErr GDALFlushRasterCache( GDALRasterBandH hBand );
 
 deprecated( "Use GDALGetRasterHistogramEx() instead") {
@@ -711,10 +711,10 @@ struct  GDALRPCInfo {
     double      dfLONG_SCALE;
     double      dfHEIGHT_SCALE;
 
-    double      adfLINE_NUM_COEFF[20];
-    double      adfLINE_DEN_COEFF[20];
-    double      adfSAMP_NUM_COEFF[20];
-    double      adfSAMP_DEN_COEFF[20];
+    double[20]  adfLINE_NUM_COEFF;
+    double[20]  adfLINE_DEN_COEFF;
+    double[20]  adfSAMP_NUM_COEFF;
+    double[20]  adfSAMP_DEN_COEFF;
     
     double	dfMIN_LONG;
     double      dfMIN_LAT;
