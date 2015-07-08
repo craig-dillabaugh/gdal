@@ -1355,15 +1355,6 @@ extern(C) void            OGR_F_FillUnsetWithDefault( OGRFeatureH hFeat,
                                                       char** papszOptions );
 extern(C) int             OGR_F_Validate( OGRFeatureH, int nValidateFlags, 
                                           int bEmitError );
-                                          
-                                          
-                                          
-                                       
-                                       
-
-
-//TODO: Done to here
-                                          
 
 /* -------------------------------------------------------------------- */
 /*      ogrsf_frmts.h                                                   */
