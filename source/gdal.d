@@ -150,43 +150,49 @@ extern(C) union OGRField
     double      Real;
     char*       String;
     
-    struct IntegerList 
+    struct _IntegerList 
     {
         int     nCount;
         int*    paList;
     }
+    _IntegerList IntegerList;
     
-    struct Integer64List
+    struct _Integer64List
     {
         int      nCount;
         GIntBig* paList;
     }
+    _Integer64List Integer64List;
 
-    struct RealList
+    struct _RealList
     {
         int     nCount;
         double* paList;
     }
+    _RealList RealList;
     
-    struct StringList
+    struct _StringList
     {
         int     nCount;
         char**  paList;
     }
+    _StringList StringList;
 
-    struct Binary
+    struct _Binary
     {
         int     nCount;
         GByte*  paData;
     }
+    _Binary Binary;
     
-    struct Set
+    struct _Set
     {
         int     nMarker1;
         int     nMarker2;
     }
+    _Set Set;
 
-    struct Date
+    struct _Date
     {
         GInt16  Year;
         GByte   Month;
@@ -199,6 +205,7 @@ extern(C) union OGRField
         float   Second; /* with millisecond accuracy. at the end of the 
                         structure, so as to keep it 12 bytes on 32 bit */
     }
+    _Date Date;
 }
 
 /* ******************* END of CPL Symbols ********************** /
