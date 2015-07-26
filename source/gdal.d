@@ -37,10 +37,13 @@ GDALProgressFunc = int function( double dfComplete, const(char)* pszMessage,
 alias GIntBig = long; //GIntBig is a 64-bit integer and long is always 
 		      //64 bits in D
 alias GUIntBig = ulong;
+
+alias GInt16 = short;
+alias GUInt16 = ushort;
+
 alias GByte = ubyte;  //GByte is unsigned char in C.
+alias GBool = int;
 
-
-alias OGRErr = int;  //Defined in ogr_core.h
 
 extern(C) enum CPLXMLNodeType {  //From cpl_minixml.h
     CXT_Element = 0,
@@ -58,155 +61,7 @@ extern(C) struct CPLXMLNode  //From cpl_minixml.h
     CPLXMLNode*         psChild;
 }
 
-/* The following definitions are from org_core.h */
 
-extern(C) enum OGRwkbGeometryType  //From ogr_core.h
-{
-    wkbUnknown = 0,         /**< unknown type, non-standard */
-    wkbPoint = 1,           /**< 0-dimensional geometric object, standard WKB */
-    wkbLineString = 2,      /**< 1-dimensional geometric object with linear
-                             *   interpolation between Points, standard WKB */
-    wkbPolygon = 3,         /**< planar 2-dimensional geometric object defined
-                             *   by 1 exterior boundary and 0 or more interior
-                             *   boundaries, standard WKB */
-    wkbMultiPoint = 4,      /**< GeometryCollection of Points, standard WKB */
-    wkbMultiLineString = 5, /**< GeometryCollection of LineStrings, standard WKB */
-    wkbMultiPolygon = 6,    /**< GeometryCollection of Polygons, standard WKB */
-    wkbGeometryCollection = 7, /**< geometric object that is a collection of 1
-                                    or more geometric objects, standard WKB */
-    wkbCircularString = 8,  /**< one or more circular arc segments connected end to end,
-                             *   ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbCompoundCurve = 9,   /**< sequence of contiguous curves, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbCurvePolygon = 10,   /**< planar surface, defined by 1 exterior boundary
-                             *   and zero or more interior boundaries, that are curves.
-                             *    ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbMultiCurve = 11,     /**< GeometryCollection of Curves, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbMultiSurface = 12,   /**< GeometryCollection of Surfaces, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbNone = 100,          /**< non-standard, for pure attribute records */
-    wkbLinearRing = 101,    /**< non-standard, just for createGeometry() */
-    wkbCircularStringZ = 1008,  /**< wkbCircularString with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbCompoundCurveZ = 1009,   /**< wkbCompoundCurve with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbCurvePolygonZ = 1010,    /**< wkbCurvePolygon with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbMultiCurveZ = 1011,      /**< wkbMultiCurve with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbMultiSurfaceZ = 1012,    /**< wkbMultiSurface with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
-    wkbPoint25D = 0x80000001, /**< 2.5D extension as per 99-402 */
-    wkbLineString25D = 0x80000002, /**< 2.5D extension as per 99-402 */
-    wkbPolygon25D = 0x80000003, /**< 2.5D extension as per 99-402 */
-    wkbMultiPoint25D = 0x80000004, /**< 2.5D extension as per 99-402 */
-    wkbMultiLineString25D = 0x80000005, /**< 2.5D extension as per 99-402 */
-    wkbMultiPolygon25D = 0x80000006, /**< 2.5D extension as per 99-402 */
-    wkbGeometryCollection25D = 0x80000007 /**< 2.5D extension as per 99-402 */
-}
-
-extern(C) struct OGREnvelope //From ogr_core.h
-{
-    double      MinX;
-    double      MaxX;
-    double      MinY;
-    double      MaxY;
-}
-
-extern(C) enum OGRFieldType
-{
-  OFTInteger = 0,         /** Simple 32bit integer */ 
-  OFTIntegerList = 1,     /** List of 32bit integers */ 
-  OFTReal = 2,            /** Double Precision floating point */ 
-  OFTRealList = 3,        /** List of doubles */    
-  OFTString = 4,          /** String of ASCII chars */ 
-  OFTStringList = 5,      /** Array of strings */ 
-  OFTWideString = 6,      /** deprecated */ 
-  OFTWideStringList = 7,  /** deprecated */ 
-  OFTBinary = 8,          /** Raw Binary data */ 
-  OFTDate = 9,            /** Date */ 
-  OFTTime = 10,           /** Time */ 
-  OFTDateTime = 11,       /** Date and Time */ 
-  OFTInteger64 = 12,      /** Single 64bit integer */ 
-  OFTInteger64List = 13,  /** List of 64bit integers */    
-  OFTMaxType = 13
-}
-
-extern(C) enum OGRFieldSubType
-{
-   OFSTNone = 0,    /** No subtype. This is the default value */        
-   OFSTBoolean = 1, /** Boolean integer. Only valid for OFTInteger and OFTIntegerList.*/
-   OFSTInt16 = 2,   /** Signed 16-bit integer. Only valid for OFTInteger and 
-                        OFTIntegerList. */                                                  
-   OFSTFloat32 = 3, /** Single precision (32 bit) floatint point. Only valid for
-                        OFTReal and OFTRealList. */                                                    
-   OFSTMaxSubType = 3                                                                                                              
-}
-
-extern(C) enum OGRJustification
-{
-    OJUndefined = 0,
-    OJLeft = 1,
-    OJRight = 2
-}
-
-extern(C) union OGRField
-{
-    int         Integer;
-    GIntBig     Integer64;
-    double      Real;
-    char*       String;
-    
-    struct _IntegerList 
-    {
-        int     nCount;
-        int*    paList;
-    }
-    _IntegerList IntegerList;
-    
-    struct _Integer64List
-    {
-        int      nCount;
-        GIntBig* paList;
-    }
-    _Integer64List Integer64List;
-
-    struct _RealList
-    {
-        int     nCount;
-        double* paList;
-    }
-    _RealList RealList;
-    
-    struct _StringList
-    {
-        int     nCount;
-        char**  paList;
-    }
-    _StringList StringList;
-
-    struct _Binary
-    {
-        int     nCount;
-        GByte*  paData;
-    }
-    _Binary Binary;
-    
-    struct _Set
-    {
-        int     nMarker1;
-        int     nMarker2;
-    }
-    _Set Set;
-
-    struct _Date
-    {
-        GInt16  Year;
-        GByte   Month;
-        GByte   Day;
-        GByte   Hour;
-        GByte   Minute;
-        GByte   TZFlag; /* 0=unknown, 1=localtime(ambiguous), 
-                           100=GMT, 104=GMT+1, 80=GMT-5, etc */
-        GByte   Reserved; /* must be set to 0 */
-        float   Second; /* with millisecond accuracy. at the end of the 
-                        structure, so as to keep it 12 bytes on 32 bit */
-    }
-    _Date Date;
-}
 
 /* ******************* END of CPL Symbols ********************** /
  
@@ -287,7 +142,7 @@ struct GDALRasterIOExtraArg
 void INIT_RASTERIO_EXTRA_ARG( ref GDALRasterIOExtraArg s )
 {
   s.nVersion = RASTERIO_EXTRA_ARG_CURRENT_VERSION;
-  s.eResampleAlg = GRIORA_NearestNeighbour;
+  s.eResampleAlg = GDALRIOResampleAlg.GRIORA_NearestNeighbour;
   s.pfnProgress = null;
   s.pProgressData = null;
   s.bFloatingPointWindowValidity = 0;
@@ -1121,6 +976,7 @@ GDALGetJPEG2000Structure(const(char)* pszFilename,
 
 debug 
 {
+struct OGRGeometryHS;
 alias OGRGeometryH = OGRGeometryHS*;
 }
 else 
@@ -1130,7 +986,9 @@ alias OGRGeometryH = void*;
 
 debug
 {
+  struct OGRSpatialReferenceHS;
   alias OGRSpatialReferenceH = OGRSpatialReferenceHS*;
+  struct OGRCoordinateTransformationHS;
   alias OGRCoordinateTransformationH = OGRCoordinateTransformationHS*;
 }
 else 
@@ -1338,6 +1196,10 @@ extern(C) int  OGRGetNonLinearGeometriesEnabledFlag();
 
 debug 
 {
+  struct OGRFieldDefnHS;
+  struct OGRFeatureDefnHS;
+  struct OGRFeatureHS;
+  struct OGRStyleTableHS;
   alias OGRFieldDefnH   = OGRFieldDefnHS*;
   alias OGRFeatureDefnH = OGRFeatureDefnHS*;
   alias OGRFeatureH     = OGRFeatureHS*;
@@ -1351,6 +1213,7 @@ else
   alias OGRStyleTableH  = void*;
 }
 
+struct OGRGeomFieldDefnHS;
 alias OGRGeomFieldDefnH  = OGRGeomFieldDefnHS*;
 
 /* OGRFieldDefn */
@@ -1532,8 +1395,11 @@ extern(C) int             OGR_F_Validate( OGRFeatureH, int nValidateFlags,
 
 debug 
 {
+  struct OGRLayerHS;
   alias OGRLayerH = OGRLayerHS*;
+  struct OGRDataSourceHS;
   alias OGRDataSourceH = OGRDataSourceHS*;
+  struct OGRDriverHS;
   alias OGRSFDriverH = OGRDriverHS*;
 }
 else 
@@ -1613,7 +1479,7 @@ extern(C) OGRSFDriverH  OGR_DS_GetDriver( OGRDataSourceH );
 extern(C) OGRLayerH  OGR_DS_CreateLayer( OGRDataSourceH, const(char)*, 
                                       OGRSpatialReferenceH, OGRwkbGeometryType,
                                       char ** );
-extern(C) GRLayerH  OGR_DS_CopyLayer( OGRDataSourceH, OGRLayerH, const(char)*,
+extern(C) OGRLayerH  OGR_DS_CopyLayer( OGRDataSourceH, OGRLayerH, const(char)*,
                                     char ** );
 extern(C) int     OGR_DS_TestCapability( OGRDataSourceH, const(char)* );
 extern(C) OGRLayerH  OGR_DS_ExecuteSQL( OGRDataSourceH, const(char)*,
@@ -1663,6 +1529,8 @@ extern(C) void  OGRCleanupAll();
 
 debug 
 {
+struct OGRStyleMgrHS;
+struct OGRStyleToolHS;
 alias OGRStyleMgrH = OGRStyleMgrHS*;
 alias OGRStyleToolH = OGRStyleToolHS*;
 }
@@ -1714,7 +1582,7 @@ extern(C) int  OGR_ST_GetRGBFromString(OGRStyleToolH hST, const(char)*pszColor,
 
 /* OGRStyleTable */
 
-extern(C) OGRStyleTableH   OGR_STBL_Create( void ); //TODO: ? CPL_WARN_UNUSED_RESULT;
+extern(C) OGRStyleTableH   OGR_STBL_Create(); //TODO: ? CPL_WARN_UNUSED_RESULT;
 extern(C) void     OGR_STBL_Destroy( OGRStyleTableH hSTBL ); 
 extern(C) int      OGR_STBL_AddStyle( OGRStyleTableH hStyleTable,
                                    const(char)*pszName,
@@ -1727,3 +1595,226 @@ extern(C) const(char)* OGR_STBL_Find( OGRStyleTableH hStyleTable, const(char)*ps
 extern(C) void     OGR_STBL_ResetStyleStringReading( OGRStyleTableH hStyleTable );
 extern(C) const(char)* OGR_STBL_GetNextStyle( OGRStyleTableH hStyleTable);
 extern(C) const(char)* OGR_STBL_GetLastStyleName( OGRStyleTableH hStyleTable);
+
+/*****************************************************************************************
+ * From ogr_core.h
+ *****************************************************************************************/
+ 
+/* The following definitions are from org_core.h */
+
+extern(C) enum OGRwkbGeometryType  //From ogr_core.h
+{
+    wkbUnknown = 0,         /**< unknown type, non-standard */
+    wkbPoint = 1,           /**< 0-dimensional geometric object, standard WKB */
+    wkbLineString = 2,      /**< 1-dimensional geometric object with linear
+                             *   interpolation between Points, standard WKB */
+    wkbPolygon = 3,         /**< planar 2-dimensional geometric object defined
+                             *   by 1 exterior boundary and 0 or more interior
+                             *   boundaries, standard WKB */
+    wkbMultiPoint = 4,      /**< GeometryCollection of Points, standard WKB */
+    wkbMultiLineString = 5, /**< GeometryCollection of LineStrings, standard WKB */
+    wkbMultiPolygon = 6,    /**< GeometryCollection of Polygons, standard WKB */
+    wkbGeometryCollection = 7, /**< geometric object that is a collection of 1
+                                    or more geometric objects, standard WKB */
+    wkbCircularString = 8,  /**< one or more circular arc segments connected end to end,
+                             *   ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbCompoundCurve = 9,   /**< sequence of contiguous curves, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbCurvePolygon = 10,   /**< planar surface, defined by 1 exterior boundary
+                             *   and zero or more interior boundaries, that are curves.
+                             *    ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbMultiCurve = 11,     /**< GeometryCollection of Curves, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbMultiSurface = 12,   /**< GeometryCollection of Surfaces, ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbNone = 100,          /**< non-standard, for pure attribute records */
+    wkbLinearRing = 101,    /**< non-standard, just for createGeometry() */
+    wkbCircularStringZ = 1008,  /**< wkbCircularString with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbCompoundCurveZ = 1009,   /**< wkbCompoundCurve with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbCurvePolygonZ = 1010,    /**< wkbCurvePolygon with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbMultiCurveZ = 1011,      /**< wkbMultiCurve with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbMultiSurfaceZ = 1012,    /**< wkbMultiSurface with Z component. ISO SQL/MM Part 3. GDAL &gt;= 2.0 */
+    wkbPoint25D = 0x80000001, /**< 2.5D extension as per 99-402 */
+    wkbLineString25D = 0x80000002, /**< 2.5D extension as per 99-402 */
+    wkbPolygon25D = 0x80000003, /**< 2.5D extension as per 99-402 */
+    wkbMultiPoint25D = 0x80000004, /**< 2.5D extension as per 99-402 */
+    wkbMultiLineString25D = 0x80000005, /**< 2.5D extension as per 99-402 */
+    wkbMultiPolygon25D = 0x80000006, /**< 2.5D extension as per 99-402 */
+    wkbGeometryCollection25D = 0x80000007 /**< 2.5D extension as per 99-402 */
+}
+
+enum int wkbCurve = 13; //TODO: Need to verify this.
+enum int wkbSurface = 14; //TODO: Need to verify this.
+
+extern(C) enum OGRwkbVariant
+{
+    wkbVariantOldOgc, /**< Old-style 99-402 extended dimension (Z) WKB types */
+    wkbVariantIso,    /**< SFSQL 1.2 and ISO SQL/MM Part 3 extended dimension (Z&M) WKB types */
+    wkbVariantPostGIS1/**< PostGIS 1.X has different codes for CurvePolygon, MultiCurve and MultiSurface */ 
+}
+
+extern(C) enum OGRwkbByteOrder
+{
+    wkbXDR = 0,      /* MSB/Sun/Motoroloa: Most Significant Byte First   */
+    wkbNDR = 1       /* LSB/Intel/Vax: Least Significant Byte First      */
+}
+
+
+extern(C) struct OGREnvelope //From ogr_core.h
+{
+    double      MinX;
+    double      MaxX;
+    double      MinY;
+    double      MaxY;
+}
+
+extern(C) struct OGREnvelope3D
+{
+    double      MinX;
+    double      MaxX;
+    double      MinY;
+    double      MaxY;
+    double      MinZ;
+    double      MaxZ;
+}
+
+extern(C) void* OGRMalloc(  size_t );
+extern(C) void* OGRCalloc(  size_t, size_t );
+extern(C) void* OGRRealloc( void*, size_t );
+extern(C) char* OGRStrdup(  const(char)* );
+extern(C) void  OGRFree(    void* );
+
+alias OGRErr = int;
+
+enum int OGRERR_NONE 			= 0;
+enum int OGRERR_NOT_ENOUGH_DATA     	= 1;  /* not enough data to deserialize */
+enum int OGRERR_NOT_ENOUGH_MEMORY   	= 2;
+enum int OGRERR_UNSUPPORTED_GEOMETRY_TYPE = 3;
+enum int OGRERR_UNSUPPORTED_OPERATION 	= 4;
+enum int OGRERR_CORRUPT_DATA        	= 5;
+enum int OGRERR_FAILURE             	= 6;
+enum int OGRERR_UNSUPPORTED_SRS     	= 7;
+enum int OGRERR_INVALID_HANDLE      	= 8;
+enum int OGRERR_NON_EXISTING_FEATURE 	= 9;  /* added in GDAL 2.0 */
+
+alias OGRBoolean = int;
+
+extern(C) enum OGRFieldType
+{
+  OFTInteger = 0,         /** Simple 32bit integer */ 
+  OFTIntegerList = 1,     /** List of 32bit integers */ 
+  OFTReal = 2,            /** Double Precision floating point */ 
+  OFTRealList = 3,        /** List of doubles */    
+  OFTString = 4,          /** String of ASCII chars */ 
+  OFTStringList = 5,      /** Array of strings */ 
+  OFTWideString = 6,      /** deprecated */ 
+  OFTWideStringList = 7,  /** deprecated */ 
+  OFTBinary = 8,          /** Raw Binary data */ 
+  OFTDate = 9,            /** Date */ 
+  OFTTime = 10,           /** Time */ 
+  OFTDateTime = 11,       /** Date and Time */ 
+  OFTInteger64 = 12,      /** Single 64bit integer */ 
+  OFTInteger64List = 13,  /** List of 64bit integers */    
+  OFTMaxType = 13
+}
+
+extern(C) enum OGRFieldSubType
+{
+   OFSTNone = 0,    /** No subtype. This is the default value */        
+   OFSTBoolean = 1, /** Boolean integer. Only valid for OFTInteger and OFTIntegerList.*/
+   OFSTInt16 = 2,   /** Signed 16-bit integer. Only valid for OFTInteger and 
+                        OFTIntegerList. */                                                  
+   OFSTFloat32 = 3, /** Single precision (32 bit) floatint point. Only valid for
+                        OFTReal and OFTRealList. */                                                    
+   OFSTMaxSubType = 3                                                                                                              
+}
+
+extern(C) enum OGRJustification
+{
+    OJUndefined = 0,
+    OJLeft = 1,
+    OJRight = 2
+}
+
+extern(C) union OGRField
+{
+    int         Integer;
+    GIntBig     Integer64;
+    double      Real;
+    char*       String;
+    
+    struct _IntegerList 
+    {
+        int     nCount;
+        int*    paList;
+    }
+    _IntegerList IntegerList;
+    
+    struct _Integer64List
+    {
+        int      nCount;
+        GIntBig* paList;
+    }
+    _Integer64List Integer64List;
+
+    struct _RealList
+    {
+        int     nCount;
+        double* paList;
+    }
+    _RealList RealList;
+    
+    struct _StringList
+    {
+        int     nCount;
+        char**  paList;
+    }
+    _StringList StringList;
+
+    struct _Binary
+    {
+        int     nCount;
+        GByte*  paData;
+    }
+    _Binary Binary;
+    
+    struct _Set
+    {
+        int     nMarker1;
+        int     nMarker2;
+    }
+    _Set Set;
+
+    struct _Date
+    {
+        GInt16  Year;
+        GByte   Month;
+        GByte   Day;
+        GByte   Hour;
+        GByte   Minute;
+        GByte   TZFlag; /* 0=unknown, 1=localtime(ambiguous), 
+                           100=GMT, 104=GMT+1, 80=GMT-5, etc */
+        GByte   Reserved; /* must be set to 0 */
+        float   Second; /* with millisecond accuracy. at the end of the 
+                        structure, so as to keep it 12 bytes on 32 bit */
+    }
+    _Date Date;
+}
+
+
+extern(C) enum OGRSTClassId
+{
+    OGRSTCNone   = 0,
+    OGRSTCPen    = 1,
+    OGRSTCBrush  = 2,
+    OGRSTCSymbol = 3,
+    OGRSTCLabel  = 4,
+    OGRSTCVector = 5
+}
+
+extern(C) enum OGRSTUnitId
+{
+    OGRSTUGround = 0,
+    OGRSTUPixel  = 1,
+    OGRSTUPoints = 2,
+    OGRSTUMM     = 3,
+    OGRSTUCM     = 4,
+    OGRSTUInches = 5
+}
