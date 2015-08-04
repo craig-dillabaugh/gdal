@@ -1,14 +1,10 @@
 /*
  * D Bindings for the Geospatial Data Abstraction Library (GDAL) C Library
- * Version 1.11.0
+ * Version 2.0
  *
  * Binding Author: Craig Dillabaugh
  *
  * For more information on GDAL itself see:  http://www.gdal.org/
- *
- *
- * Current build command:
- *     dmd test_gdal_d.d gdal.d -L-lgdal
  */
  module gdal;
  
