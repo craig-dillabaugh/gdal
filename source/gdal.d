@@ -547,7 +547,7 @@ extern(C) CPLErr GDALSetRasterScale( GDALRasterBandH hBand, double dfNewOffset )
 
 extern(C) void   
 GDALComputeRasterMinMax( GDALRasterBandH hBand, int bApproxOK,
-                         double[2] adfMinMax );
+                         double* adfMinMax );
 extern(C) CPLErr GDALFlushRasterCache( GDALRasterBandH hBand );
 
 deprecated( "Use GDALGetRasterHistogramEx() instead") {
