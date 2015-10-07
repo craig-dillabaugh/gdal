@@ -170,9 +170,6 @@ enum GDALColorInterp
 extern(C) const(char)* GDALGetColorInterpretationName( GDALColorInterp );
 extern(C) GDALColorInterp GDALGetColorInterpretationByName( const(char)* pszName );
 
-extern(C) const(char)* GDALGetColorInterpretationName( GDALColorInterp );
-extern(C) GDALColorInterp  GDALGetColorInterpretationByName( const(char)*pszName );
-
 enum GDALPaletteInterp 
 {
   GPI_Gray=0,
