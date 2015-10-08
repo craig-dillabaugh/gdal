@@ -1,2 +1,5 @@
 *.a
 *.o
+.directory
+.dub
+dub.selections.json
